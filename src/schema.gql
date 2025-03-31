@@ -1,0 +1,71 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AuthData {
+  id: Float
+  email: String
+  role: String
+  token: String
+}
+
+type AuthResponse {
+  status: String!
+  message: String!
+  data: AuthData
+}
+
+type UserGQL {
+  id: Int!
+  username: String!
+  firstName: String!
+  lastName: String!
+  email: String!
+  avatar: String
+  role: String!
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type UserResponse {
+  status: String!
+  message: String!
+  data: UserGQL
+}
+
+type Query {
+  getMyProfile: UserResponse!
+}
+
+type Mutation {
+  register(input: RegisterInput!): AuthResponse!
+  login(input: LoginInput!): AuthResponse!
+  updateMyUser(input: UpdateUserInput!): UserResponse!
+}
+
+input RegisterInput {
+  username: String!
+  firstName: String!
+  lastName: String!
+  birthDate: String!
+  email: String!
+  password: String!
+  repeatedPass: String!
+  role: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input UpdateUserInput {
+  username: String
+  password: String
+  repeatedPass: String
+}
