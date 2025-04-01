@@ -1,7 +1,8 @@
 // Importamos las dependencias principales.
 import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
-import { createTestApp } from '../../test-utils';
+import { createTestApp } from '../../../test-utils';
+import { JwtService } from '@nestjs/jwt';
 
 // Definimos la app, el servidor HTTP y el token.
 let app: INestApplication;
@@ -10,7 +11,7 @@ let token: string;
 
 // Inicializamos el test del endpoint de actualización de usuario.
 describe('PUT /api/users (e2e)', () => {
-    // Creamos la app, registramos usuario y obtenemos token.
+    // Creamos la app, registramos usuario y obtenemos token antes de los tests.
     beforeAll(async () => {
         const testApp = await createTestApp();
         app = testApp.app;
@@ -40,7 +41,7 @@ describe('PUT /api/users (e2e)', () => {
         await app.close();
     });
 
-    // Test: actualizar solo el nombre de usuario.
+    // Test positivo: actualizar el nombre de usuario.
     it('debería actualizar el nombre de usuario', async () => {
         const response = await request(httpServer)
             .put('/api/users')
@@ -51,13 +52,11 @@ describe('PUT /api/users (e2e)', () => {
         expect(response.body).toMatchObject({
             status: 'ok',
             message: 'Usuario actualizado',
-            data: expect.objectContaining({
-                username: 'josinho_updated',
-            }),
+            data: expect.objectContaining({ username: 'josinho_updated' }),
         });
     });
 
-    // Test: actualizar la contraseña correctamente.
+    // Test positivo: actualizar la contraseña correctamente.
     it('debería actualizar la contraseña', async () => {
         const response = await request(httpServer)
             .put('/api/users')
@@ -74,7 +73,7 @@ describe('PUT /api/users (e2e)', () => {
         });
     });
 
-    // Test: error si las contraseñas no coinciden.
+    // Test negativo: contraseñas no coinciden.
     it('debería lanzar error si las contraseñas no coinciden', async () => {
         const response = await request(httpServer)
             .put('/api/users')
@@ -86,7 +85,50 @@ describe('PUT /api/users (e2e)', () => {
 
         expect(response.status).toBe(400);
         expect(response.body).toMatchObject({
+            status: 'error',
             message: 'Las contraseñas no coinciden',
+        });
+    });
+
+    // Test negativo: falta una contraseña válida (ambas deben ser válidas).
+    it('debería lanzar error si falta una de las contraseñas', async () => {
+        const response = await request(httpServer)
+            .put('/api/users')
+            .set('Authorization', `Bearer ${token}`)
+            .send({ password: 'SoloUnaPass123!' });
+
+        expect(response.status).toBe(400);
+        expect(response.body.message).toContain('repeatedPass');
+    });
+
+    // Test negativo: token inválido.
+    it('debería lanzar error si el token es inválido', async () => {
+        const response = await request(httpServer)
+            .put('/api/users')
+            .set('Authorization', 'Bearer token-falso')
+            .send({ username: 'cualquiera' });
+
+        expect(response.status).toBe(401);
+        expect(response.body).toMatchObject({
+            status: 'error',
+            message: 'Unauthorized',
+        });
+    });
+
+    // Test negativo: usuario no encontrado (token válido pero userId inexistente).
+    it('debería lanzar error si el usuario no existe', async () => {
+        const jwtService = app.get(JwtService);
+        const fakeToken = jwtService.sign({ sub: 9999 });
+
+        const response = await request(httpServer)
+            .put('/api/users')
+            .set('Authorization', `Bearer ${fakeToken}`)
+            .send({ username: 'nombre' });
+
+        expect(response.status).toBe(404);
+        expect(response.body).toMatchObject({
+            status: 'error',
+            message: 'Usuario no encontrado',
         });
     });
 });

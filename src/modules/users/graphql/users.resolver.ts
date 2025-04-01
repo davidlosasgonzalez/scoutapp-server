@@ -32,7 +32,7 @@ export class UsersResolver {
     async getMyProfile(
         @CurrentUser() user: AuthPayload,
     ): Promise<UserResponse> {
-        const profile = await this.usersService.getPrivateProfile(user.userId);
+        const profile = await this.usersService.getPrivateProfile(user.sub);
 
         return {
             status: 'ok',
@@ -48,10 +48,7 @@ export class UsersResolver {
         @CurrentUser() user: AuthPayload,
         @Args('input') input: UpdateUserInput,
     ): Promise<UserResponse> {
-        const updated = await this.updateUserService.execute(
-            user.userId,
-            input,
-        );
+        const updated = await this.updateUserService.execute(user.sub, input);
 
         return {
             status: 'ok',

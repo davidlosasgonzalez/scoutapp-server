@@ -2,7 +2,7 @@
 import * as request from 'supertest';
 import { Test } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { AppModule } from '../../../src/app.module';
+import { AppModule } from '../../../../src/app.module';
 
 // Importamos herramientas auxiliares.
 import { resetTestDatabase } from '../../utils/reset-db.util';

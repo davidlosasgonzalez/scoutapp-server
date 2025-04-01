@@ -2,19 +2,19 @@
 import * as request from 'supertest';
 import { Test } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { AppModule } from '../../../src/app.module';
+import { AppModule } from '../../../../src/app.module';
 
 // Importamos herramientas auxiliares.
 import { resetTestDatabase } from '../../utils/reset-db.util';
 import { getDataSourceToken } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
-// Inicializamos el test e2e de la query "getMyProfile" en GraphQL.
-describe('GraphQL: QUERY getMyProfile (e2e)', () => {
+// Inicializamos el test e2e de la mutación "login" en GraphQL.
+describe('GraphQL: MUTATION login (e2e)', () => {
     let app: INestApplication;
     let dataSource: DataSource;
-    let token: string;
 
+    // Configuramos la app y limpiamos la base antes de ejecutar los tests.
     beforeAll(async () => {
         const moduleRef = await Test.createTestingModule({
             imports: [AppModule],
@@ -27,6 +27,7 @@ describe('GraphQL: QUERY getMyProfile (e2e)', () => {
         dataSource = moduleRef.get<DataSource>(getDataSourceToken());
         await resetTestDatabase(dataSource);
 
+        // Creamos un usuario de prueba con la mutación "register".
         const registerQuery = `
             mutation {
                 register(input: {
@@ -39,7 +40,11 @@ describe('GraphQL: QUERY getMyProfile (e2e)', () => {
                     repeatedPass: "Hackaboss17!",
                     role: "family"
                 }) {
-                    data { id }
+                    status
+                    message
+                    data {
+                        id
+                    }
                 }
             }
         `;
@@ -47,13 +52,23 @@ describe('GraphQL: QUERY getMyProfile (e2e)', () => {
         await request(app.getHttpServer())
             .post('/graphql')
             .send({ query: registerQuery });
+    });
 
+    // Cerramos la app tras finalizar los tests.
+    afterAll(async () => {
+        await app.close();
+    });
+
+    // Test principal: iniciar sesión y obtener un token válido.
+    it('debería iniciar sesión y devolver un token JWT', async () => {
         const loginQuery = `
             mutation {
                 login(input: {
                     email: "jose.ramon@gmail.com",
                     password: "Hackaboss17!"
                 }) {
+                    status
+                    message
                     data {
                         token
                     }
@@ -61,57 +76,24 @@ describe('GraphQL: QUERY getMyProfile (e2e)', () => {
             }
         `;
 
-        const loginResponse = await request(app.getHttpServer())
+        const response = await request(app.getHttpServer())
             .post('/graphql')
             .send({ query: loginQuery });
 
-        token = loginResponse.body.data.login.data.token;
-    });
+        if (!response.body.data?.login?.data?.token) {
+            console.dir(response.body, { depth: null });
+            throw new Error(
+                'Login GraphQL falló: no se recibió data.login.data.token',
+            );
+        }
 
-    afterAll(async () => {
-        await app.close();
-    });
-
-    it('debería devolver el perfil privado del usuario autenticado', async () => {
-        const profileQuery = `
-            query {
-                getMyProfile {
-                    status
-                    message
-                    data {
-                        id
-                        username
-                        firstName
-                        lastName
-                        email
-                        avatar
-                        role
-                        createdAt
-                        modifiedAt
-                    }
-                }
-            }
-        `;
-
-        const response = await request(app.getHttpServer())
-            .post('/graphql')
-            .set('Authorization', `Bearer ${token}`)
-            .send({ query: profileQuery });
-
+        // Validamos la respuesta esperada.
         expect(response.status).toBe(200);
-        expect(response.body.data.getMyProfile).toMatchObject({
+        expect(response.body.data.login).toMatchObject({
             status: 'ok',
-            message: 'Perfil obtenido',
+            message: 'Login correcto',
             data: {
-                id: expect.any(Number),
-                username: 'josinho',
-                firstName: 'Jose',
-                lastName: 'Ramón Gayoso',
-                email: 'jose.ramon@gmail.com',
-                avatar: null,
-                role: 'family',
-                createdAt: expect.any(String),
-                modifiedAt: expect.any(String),
+                token: expect.any(String),
             },
         });
     });

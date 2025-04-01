@@ -1,7 +1,7 @@
 // Importamos las dependencias principales.
 import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
-import { createTestApp } from '../../test-utils';
+import { createTestApp } from '../../../test-utils';
 import * as path from 'path';
 
 // Definimos la app, el servidor HTTP y el token.
@@ -43,7 +43,10 @@ describe('PUT /api/users/avatar (e2e)', () => {
 
     // Test: subir un avatar como usuario autenticado.
     it('debería subir un avatar y devolver su nombre de archivo', async () => {
-        const imagePath = path.join(__dirname, '../../assets/avatar-test.png');
+        const imagePath = path.join(
+            __dirname,
+            '../../../assets/avatar-test.png',
+        );
 
         const response = await request(httpServer)
             .put('/api/users/avatar')

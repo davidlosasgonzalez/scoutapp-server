@@ -1,5 +1,5 @@
 // Inicializamos la interfaz para el payload JWT.
 export interface AuthPayload {
-    userId: number;
+    sub: number;
     role: 'family' | 'scout';
 }

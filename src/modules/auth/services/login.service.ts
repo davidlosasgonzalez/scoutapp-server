@@ -23,12 +23,14 @@ export class LoginService {
     ) {}
 
     async execute(dto: LoginDto): Promise<LoginResponse> {
+        const invalidCredentialsMsg = 'Credenciales inválidas';
+
         const user = await this.userRepository.findOne({
             where: { email: dto.email },
         });
 
         if (!user) {
-            throw new UnauthorizedException('Credenciales inválidas');
+            throw new UnauthorizedException(invalidCredentialsMsg);
         }
 
         const isValid = await this.hashService.comparePasswords(
@@ -37,12 +39,15 @@ export class LoginService {
         );
 
         if (!isValid) {
-            throw new UnauthorizedException('Credenciales inválidas');
+            throw new UnauthorizedException(invalidCredentialsMsg);
         }
 
-        const payload = { sub: user.id, role: user.role };
+        const payload: { sub: number; role: string } = {
+            sub: user.id,
+            role: user.role,
+        };
 
-        const token = this.jwtService.sign(payload);
+        const token: string = this.jwtService.sign(payload);
 
         return { token };
     }

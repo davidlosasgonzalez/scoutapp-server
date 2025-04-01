@@ -1,0 +1,11 @@
+{
+    "$schema": "https://json.schemastore.org/jest",
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testMatch": ["**/tests/unit/**/*.unit-spec.ts"],
+    "moduleFileExtensions": ["ts", "js", "json"],
+    "transform": {
+        "^.+\\.ts$": "ts-jest"
+    },
+    "collectCoverageFrom": ["src/**/*.ts", "!src/main.ts", "!src/**/index.ts"]
+}

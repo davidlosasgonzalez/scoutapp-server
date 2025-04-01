@@ -38,7 +38,7 @@ export class UsersController {
     @UseGuards(JwtAuthGuard)
     @Get('private')
     async getPrivateProfile(@CurrentUser() user: AuthPayload) {
-        const data = await this.usersService.getPrivateProfile(user.userId);
+        const data = await this.usersService.getPrivateProfile(user.sub);
         return {
             status: 'ok',
             data,
@@ -52,10 +52,7 @@ export class UsersController {
         @CurrentUser() user: AuthPayload,
         @UploadedFile() file: Express.Multer.File,
     ) {
-        const filename = await this.updateAvatarService.execute(
-            user.userId,
-            file,
-        );
+        const filename = await this.updateAvatarService.execute(user.sub, file);
         return {
             status: 'ok',
             message: 'Avatar actualizado',
@@ -69,7 +66,7 @@ export class UsersController {
         @CurrentUser() user: AuthPayload,
         @Body() dto: UpdateUserDto,
     ) {
-        const updated = await this.updateUserService.execute(user.userId, dto);
+        const updated = await this.updateUserService.execute(user.sub, dto);
         const { password, ...safe } = updated;
 
         return {
