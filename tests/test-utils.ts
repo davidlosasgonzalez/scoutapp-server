@@ -13,9 +13,9 @@ export const createTestApp = async (): Promise<{
     dataSource: DataSource;
     httpServer: any;
 }> => {
-    // Compilamos el módulo principal de la app.
+    // Compilamos el módulo principal de la app usando AppModule.forRoot con '.env.test'.
     const moduleRef = await Test.createTestingModule({
-        imports: [AppModule],
+        imports: [AppModule.forRoot('.env.test')],
     }).compile();
 
     // Creamos la instancia de la aplicación Nest.
@@ -24,25 +24,22 @@ export const createTestApp = async (): Promise<{
     // Aplicamos los pipes globales para validación.
     app.useGlobalPipes(
         new ValidationPipe({
-            whitelist: true, // Elimina propiedades no definidas en los DTOs.
+            // Elimina propiedades no definidas en los DTOs.
+            whitelist: true,
         }),
     );
 
     // Registramos el filtro global de excepciones personalizado.
     app.useGlobalFilters(new HttpExceptionFilter());
 
-    // Obtenemos la fuente de datos (base de datos) para los tests.
-    const dataSource = app.get(DataSource);
-
-    // Limpiamos y sincronizamos la base de datos de test antes de iniciar.
-    await dataSource.dropDatabase();
-    await dataSource.synchronize();
-
     // Iniciamos la aplicación Nest.
     await app.init();
 
     // Obtenemos el servidor HTTP que usaremos en los tests.
     const httpServer = app.getHttpServer();
+
+    // Obtenemos la fuente de datos directamente por su clase.
+    const dataSource = app.get<DataSource>(DataSource);
 
     // Retornamos todo lo necesario para los tests: app, base de datos y servidor HTTP.
     return { app, dataSource, httpServer };

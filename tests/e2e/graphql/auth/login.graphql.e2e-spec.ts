@@ -17,14 +17,14 @@ describe('GraphQL: MUTATION login (e2e)', () => {
     // Configuramos la app y limpiamos la base antes de ejecutar los tests.
     beforeAll(async () => {
         const moduleRef = await Test.createTestingModule({
-            imports: [AppModule],
+            imports: [AppModule.forRoot('.env.test')],
         }).compile();
 
         app = moduleRef.createNestApplication();
         app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
         await app.init();
 
-        dataSource = moduleRef.get<DataSource>(getDataSourceToken());
+        dataSource = app.get<DataSource>(DataSource);
         await resetTestDatabase(dataSource);
 
         // Creamos un usuario de prueba con la mutación "register".
