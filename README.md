@@ -1,6 +1,6 @@
-# 🏆 Ojeador Deportivo - API REST + GraphQL
+# 🏆 ScoutApp - API REST + GraphQL
 
-Este repositorio contiene el backend del proyecto Ojeador Deportivo, una plataforma diseñada para conectar a jóvenes promesas del fútbol con ojeadores deportivos profesionales.
+Este repositorio contiene el backend del proyecto ScoutApp, una plataforma diseñada para conectar a jóvenes promesas del fútbol con ojeadores deportivos profesionales.
 
 La API está construida con `Nest.js`, utilizando `TypeScript`, `MySQL` y `TypeORM`, y expone tanto endpoints `RESTful` como una `API GraphQL`. El backend gestiona la autenticación, usuarios, subida de avatar, jugadores, vídeos y contrataciones.
 
