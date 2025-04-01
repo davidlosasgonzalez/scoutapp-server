@@ -49,6 +49,7 @@ describe('UpdateUserService (unit)', () => {
 
     // Test positivo: actualiza correctamente el nombre de usuario.
     it('debería actualizar el nombre de usuario correctamente', async () => {
+        // Definimos un mock de usuario existente.
         const userMock: UserEntity = {
             id: 1,
             username: 'original',
@@ -63,16 +64,19 @@ describe('UpdateUserService (unit)', () => {
             modifiedAt: new Date(),
         };
 
+        // Simulamos DTO de entrada con nuevo nombre de usuario.
         const dto: UpdateUserDto = {
             username: 'updatedName',
         };
 
+        // Simulamos que el usuario existe y se guarda correctamente.
         userRepo.findOne.mockResolvedValue(userMock);
         userRepo.save.mockResolvedValue({
             ...userMock,
             username: dto.username,
         });
 
+        // Ejecutamos el servicio y verificamos resultados.
         const result = await updateUserService.execute(userMock.id, dto);
 
         expect(result.username).toBe(dto.username);
