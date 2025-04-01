@@ -1,5 +1,9 @@
 // Importamos las dependencias.
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+    Injectable,
+    BadRequestException,
+    ConflictException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -21,18 +25,30 @@ export class RegisterService {
     ) {}
 
     async execute(dto: RegisterDto): Promise<RegisterResponse> {
-        const existing = await this.userRepository.findOne({
-            where: [{ email: dto.email }, { username: dto.username }],
+        // Verificamos si el email ya está en uso.
+        const existingByEmail = await this.userRepository.findOne({
+            where: { email: dto.email },
         });
 
-        if (existing) {
-            throw new BadRequestException('El usuario ya existe');
+        if (existingByEmail) {
+            throw new ConflictException('Ya existe una cuenta con este email');
         }
 
+        // Verificamos si el nombre de usuario ya está en uso.
+        const existingByUsername = await this.userRepository.findOne({
+            where: { username: dto.username },
+        });
+
+        if (existingByUsername) {
+            throw new ConflictException('El nombre de usuario ya está en uso');
+        }
+
+        // Verificamos si las contraseñas coinciden.
         if (dto.password !== dto.repeatedPass) {
             throw new BadRequestException('Las contraseñas no coinciden');
         }
 
+        // Creamos el nuevo usuario con los datos proporcionados.
         const user = this.userRepository.create({
             username: dto.username,
             firstName: dto.firstName,
@@ -43,8 +59,10 @@ export class RegisterService {
             role: dto.role,
         });
 
+        // Guardamos el usuario en la base de datos.
         const savedUser = await this.userRepository.save(user);
 
+        // Devolvemos una respuesta simplificada.
         return {
             id: savedUser.id,
             email: savedUser.email,

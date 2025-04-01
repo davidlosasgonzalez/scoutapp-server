@@ -1,7 +1,7 @@
 // Importamos las dependencias principales.
 import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
-import { createTestApp } from '../../test-utils';
+import { createTestApp } from '../../../test-utils';
 
 // Definimos la app y el servidor HTTP.
 let app: INestApplication;
@@ -33,7 +33,7 @@ describe('POST /api/users/login (e2e)', () => {
         await app.close();
     });
 
-    // Test principal: login con credenciales correctas.
+    // Caso positivo: login con credenciales correctas.
     it('debería iniciar sesión correctamente', async () => {
         const response = await request(httpServer)
             .post('/api/users/login')
@@ -49,6 +49,38 @@ describe('POST /api/users/login (e2e)', () => {
             data: {
                 token: expect.any(String),
             },
+        });
+    });
+
+    // Caso negativo: email no registrado.
+    it('debería fallar si el email no está registrado', async () => {
+        const response = await request(httpServer)
+            .post('/api/users/login')
+            .send({
+                email: 'inexistente@email.com',
+                password: 'Hackaboss17!',
+            });
+
+        expect(response.status).toBe(401);
+        expect(response.body).toMatchObject({
+            status: 'error',
+            message: 'Credenciales inválidas',
+        });
+    });
+
+    // Caso negativo: contraseña incorrecta.
+    it('debería fallar si la contraseña es incorrecta', async () => {
+        const response = await request(httpServer)
+            .post('/api/users/login')
+            .send({
+                email: 'jose.ramon@gmail.com',
+                password: 'ContraseñaIncorrecta123',
+            });
+
+        expect(response.status).toBe(401);
+        expect(response.body).toMatchObject({
+            status: 'error',
+            message: 'Credenciales inválidas',
         });
     });
 });
