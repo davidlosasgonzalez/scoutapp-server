@@ -3,6 +3,7 @@ import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { createTestApp } from '../../../test-utils';
 import * as path from 'path';
+import * as fs from 'fs/promises';
 
 // Definimos la app, el servidor HTTP y el token.
 let app: INestApplication;
@@ -36,9 +37,17 @@ describe('PUT /api/users/avatar (e2e)', () => {
         token = res.body.data.token;
     });
 
-    // Cerramos la app al terminar los tests.
+    // Cerramos la app y eliminamos uploads-test al terminar los tests.
     afterAll(async () => {
         await app.close();
+
+        const uploadsTestPath = path.resolve(process.cwd(), 'uploads-test');
+
+        try {
+            await fs.rm(uploadsTestPath, { recursive: true, force: true });
+        } catch (error) {
+            console.error('Error al eliminar uploads-test:', error);
+        }
     });
 
     // Test: subir un avatar como usuario autenticado.
