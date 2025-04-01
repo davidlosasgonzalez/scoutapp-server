@@ -8,6 +8,12 @@ import { NotFoundException } from '@nestjs/common';
 import { UpdateAvatarService } from '../../../src/modules/users/services/update-avatar.service';
 import { UserEntity } from '../../../src/modules/auth/entities/user.entity';
 
+// Importamos y mockeamos el helper saveUpload.
+import { saveUpload } from '../../../src/shared/utils/save-upload.util';
+jest.mock('../../../src/shared/utils/save-upload.util', () => ({
+    saveUpload: jest.fn().mockResolvedValue('mocked-avatar.jpg'),
+}));
+
 // Creamos un mock para el repositorio de usuarios.
 const mockUserRepo = () => ({
     findOne: jest.fn(),
@@ -18,6 +24,7 @@ const mockUserRepo = () => ({
 describe('UpdateAvatarService (unit)', () => {
     let updateAvatarService: UpdateAvatarService;
     let userRepo: ReturnType<typeof mockUserRepo>;
+    let configService: ConfigService;
 
     // Configuramos el entorno de testing antes de cada test.
     beforeEach(async () => {
@@ -31,9 +38,9 @@ describe('UpdateAvatarService (unit)', () => {
                 {
                     provide: ConfigService,
                     useValue: {
+                        // Mockeamos la respuesta de ConfigService para devolver 'uploads-test' en entorno de test
                         get: jest.fn((key: string) => {
-                            if (key === 'AVATAR_BASE_PATH')
-                                return 'uploads/avatars';
+                            if (key === 'UPLOADS_DIR') return 'uploads-test';
                             return null;
                         }),
                     },
@@ -44,6 +51,7 @@ describe('UpdateAvatarService (unit)', () => {
         updateAvatarService =
             module.get<UpdateAvatarService>(UpdateAvatarService);
         userRepo = module.get(getRepositoryToken(UserEntity));
+        configService = module.get(ConfigService);
     });
 
     // Test positivo: actualiza el avatar correctamente.
@@ -62,20 +70,26 @@ describe('UpdateAvatarService (unit)', () => {
         userRepo.findOne.mockResolvedValue(userMock);
         userRepo.save.mockResolvedValue({
             ...userMock,
-            avatar: expect.any(String),
+            avatar: 'mocked-avatar.jpg',
         });
 
         const result = await updateAvatarService.execute(userId, file);
 
+        // Verificamos que se buscó el usuario por ID.
         expect(userRepo.findOne).toHaveBeenCalledWith({
             where: { id: userId },
         });
-        expect(userRepo.save).toHaveBeenCalledWith(
-            expect.objectContaining({
-                avatar: expect.stringMatching(/^[\w-]+\.png$/),
-            }),
-        );
-        expect(result).toMatch(/^[\w-]{36}\.png$/);
+
+        // Verificamos que se llamó a saveUpload con el directorio del entorno de test.
+        expect(saveUpload).toHaveBeenCalledWith(file, 'uploads-test');
+
+        // Verificamos que se guardó el nuevo avatar en el usuario.
+        expect(userRepo.save).toHaveBeenCalledWith({
+            ...userMock,
+            avatar: 'mocked-avatar.jpg',
+        });
+
+        expect(result).toBe('mocked-avatar.jpg');
     });
 
     // Test negativo: lanza error si el usuario no existe.
@@ -85,6 +99,7 @@ describe('UpdateAvatarService (unit)', () => {
         await expect(
             updateAvatarService.execute(9999, {
                 originalname: 'fake.png',
+                buffer: Buffer.from('x'),
             } as Express.Multer.File),
         ).rejects.toThrow(new NotFoundException('Usuario no encontrado'));
     });

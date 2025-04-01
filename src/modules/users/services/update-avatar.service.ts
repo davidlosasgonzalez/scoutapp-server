@@ -2,31 +2,33 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ConfigService } from '@nestjs/config';
 import { UserEntity } from '../../auth/entities/user.entity';
-import { saveUpload } from '../../../shared/utils/save-upload.util';
-import { Express } from 'express';
 
-// Inicializamos el servicio.
+// Importamos el servicio para gestionar la subida de archivos.
+import { UploadService } from '../../../shared/services/uploads.service';
+
+// Inicializamos el servicio para actualizar el avatar.
 @Injectable()
 export class UpdateAvatarService {
     constructor(
         @InjectRepository(UserEntity)
         private readonly userRepo: Repository<UserEntity>,
-        private readonly configService: ConfigService,
+        private readonly uploadService: UploadService, // Inyectamos UploadService
     ) {}
 
     async execute(userId: number, file: Express.Multer.File): Promise<string> {
+        // Buscamos al usuario por ID.
         const user = await this.userRepo.findOne({ where: { id: userId } });
 
+        // Si no se encuentra, lanzamos excepción.
         if (!user) {
             throw new NotFoundException('Usuario no encontrado');
         }
 
-        const uploadsDir =
-            this.configService.get<string>('UPLOADS_DIR') ?? 'uploads';
-        const filename = await saveUpload(file, uploadsDir);
+        // Usamos UploadService para guardar el archivo; éste usará la variable de entorno UPLOADS_DIR.
+        const filename = await this.uploadService.save(file);
 
+        // Asignamos el nuevo avatar y guardamos el usuario.
         user.avatar = filename;
         await this.userRepo.save(user);
 

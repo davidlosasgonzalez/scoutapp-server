@@ -17,14 +17,14 @@ describe('GraphQL: MUTATION updateMyUser (e2e)', () => {
 
     beforeAll(async () => {
         const moduleRef = await Test.createTestingModule({
-            imports: [AppModule],
+            imports: [AppModule.forRoot('.env.test')],
         }).compile();
 
         app = moduleRef.createNestApplication();
         app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
         await app.init();
 
-        dataSource = moduleRef.get<DataSource>(getDataSourceToken());
+        dataSource = app.get<DataSource>(DataSource);
         await resetTestDatabase(dataSource);
 
         const registerQuery = `
