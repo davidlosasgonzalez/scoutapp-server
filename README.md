@@ -1,4 +1,4 @@
-# 🏆 ScoutApp - API REST + GraphQL
+# 🏆 ScoutApp - API REST + GraphQL (en construcción)
 
 Este repositorio contiene el backend del proyecto ScoutApp, una plataforma diseñada para conectar a jóvenes promesas del fútbol con ojeadores deportivos profesionales.
 

@@ -4,12 +4,12 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 
 // Importamos servicios y entidad necesarios.
-import { LoginService } from '../../../src/modules/auth/services/login.service';
-import { HashService } from '../../../src/modules/auth/services/hash.service';
-import { UserEntity } from '../../../src/modules/auth/entities/user.entity';
+import { LoginService } from '@/modules/auth/services/login.service';
+import { HashService } from '@/modules/auth/services/hash.service';
+import { UserEntity } from '@/modules/auth/entities/user.entity';
 
 // Importamos el DTO de entrada.
-import { LoginDto } from '../../../src/modules/auth/dtos/login.dto';
+import { LoginDto } from '@/modules/auth/dtos/login.dto';
 
 // Creamos un mock para el repositorio de usuarios.
 const mockUserRepo = () => ({

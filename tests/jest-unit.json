@@ -7,5 +7,8 @@
     "transform": {
         "^.+\\.ts$": "ts-jest"
     },
-    "collectCoverageFrom": ["src/**/*.ts", "!src/main.ts", "!src/**/index.ts"]
+    "collectCoverageFrom": ["src/**/*.ts", "!src/main.ts", "!src/**/index.ts"],
+    "moduleNameMapper": {
+        "^@/(.*)$": "<rootDir>/../src/$1"
+    }
 }

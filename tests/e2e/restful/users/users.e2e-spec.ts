@@ -2,6 +2,8 @@
 import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+
+// Importamos herramientas auxiliares.
 import { createTestApp } from '../../../test-utils';
 
 // Definimos la app, el servidor HTTP y el token.

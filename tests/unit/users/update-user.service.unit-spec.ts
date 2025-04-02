@@ -3,10 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
 // Importamos servicio, entidad y dependencias necesarias.
-import { UpdateUserService } from '../../../src/modules/users/services/update-user.service';
-import { HashService } from '../../../src/modules/auth/services/hash.service';
-import { UserEntity } from '../../../src/modules/auth/entities/user.entity';
-import { UpdateUserDto } from '../../../src/modules/users/dtos/update-user.dto';
+import { UpdateUserService } from '@/modules/users/services/update-user.service';
+import { HashService } from '@/modules/auth/services/hash.service';
+import { UserEntity } from '@/modules/auth/entities/user.entity';
+import { UpdateUserDto } from '@/modules/users/dtos/update-user.dto';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 // Creamos un mock para el repositorio de usuarios.

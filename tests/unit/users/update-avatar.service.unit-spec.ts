@@ -5,9 +5,9 @@ import { ConfigService } from '@nestjs/config';
 import { NotFoundException } from '@nestjs/common';
 
 // Importamos el servicio y la entidad necesarios.
-import { UpdateAvatarService } from '../../../src/modules/users/services/update-avatar.service';
-import { UserEntity } from '../../../src/modules/auth/entities/user.entity';
-import { UploadService } from '../../../src/shared/services/uploads.service';
+import { UpdateAvatarService } from '@/modules/users/services/update-avatar.service';
+import { UserEntity } from '@/modules/auth/entities/user.entity';
+import { UploadService } from '@/shared/services/uploads.service';
 
 // Creamos un mock para el repositorio de usuarios.
 const mockUserRepo = () => ({

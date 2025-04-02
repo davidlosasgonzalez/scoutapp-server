@@ -1,8 +1,10 @@
 // Importamos las dependencias principales.
 import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
-import { createTestApp } from '../../../test-utils';
 import { JwtService } from '@nestjs/jwt';
+
+// Importamos herramientas auxiliares.
+import { createTestApp } from '../../../test-utils';
 
 // Definimos la app, el servidor HTTP y el token.
 let app: INestApplication;

@@ -1,7 +1,7 @@
 // Importamos las dependencias necesarias.
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { AppModule } from '@/app.module';
+import { HttpExceptionFilter } from '@/common/filters/http-exception.filter';
 
 async function bootstrap() {
     // Seleccionamos el archivo de entorno según NODE_ENV.
