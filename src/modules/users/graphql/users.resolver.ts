@@ -12,8 +12,8 @@ import { UserGQL } from './dtos/user.graphql.dto';
 import { UserResponse } from './dtos/user-response.dto';
 
 // Importamos el guard y decorador de autenticación.
+import { CurrentUser } from '@/shared/decorators/current-user.decorator';
 import { GqlAuthGuard } from '../../auth/guards/gql-auth.guard';
-import { CurrentUser } from '../../../shared/decorators/current-user.decorator';
 
 // Importamos el tipo del payload JWT.
 import { AuthPayload } from '../../auth/interfaces/auth-payload.interface';

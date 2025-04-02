@@ -4,8 +4,8 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { NotFoundException } from '@nestjs/common';
 
 // Importamos servicios y entidad necesarios.
-import { UsersService } from '../../../src/modules/users/services/users.service';
-import { UserEntity } from '../../../src/modules/auth/entities/user.entity';
+import { UsersService } from '@/modules/users/services/users.service';
+import { UserEntity } from '@/modules/auth/entities/user.entity';
 
 // Creamos un mock para el repositorio de usuarios.
 const mockUserRepo = () => ({

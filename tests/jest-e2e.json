@@ -7,5 +7,8 @@
     },
     "setupFiles": ["dotenv/config"],
     "testEnvironment": "node",
-    "maxWorkers": 1
+    "maxWorkers": 1,
+    "moduleNameMapper": {
+        "^@/(.*)$": "<rootDir>/../src/$1"
+    }
 }

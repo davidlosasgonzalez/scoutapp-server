@@ -2,7 +2,6 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { randomUUID } from 'crypto';
-import { Express } from 'express';
 
 // Inicializamos la función de guardado de archivos.
 export async function saveUpload(

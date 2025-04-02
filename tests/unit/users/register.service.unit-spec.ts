@@ -3,12 +3,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
 // Importamos servicios y entidad necesarios.
-import { RegisterService } from '../../../src/modules/auth/services/register.service';
-import { HashService } from '../../../src/modules/auth/services/hash.service';
-import { UserEntity } from '../../../src/modules/auth/entities/user.entity';
+import { RegisterService } from '@/modules/auth/services/register.service';
+import { HashService } from '@/modules/auth/services/hash.service';
+import { UserEntity } from '@/modules/auth/entities/user.entity';
 
 // Importamos el DTO de entrada.
-import { RegisterDto } from '../../../src/modules/auth/dtos/register.dto';
+import { RegisterDto } from '@/modules/auth/dtos/register.dto';
 
 // Creamos un mock para el repositorio de usuarios.
 const mockUserRepo = () => ({

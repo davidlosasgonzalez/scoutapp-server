@@ -2,12 +2,11 @@
 import * as request from 'supertest';
 import { Test } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { AppModule } from '../../../../src/app.module';
+import { AppModule } from '@/app.module';
+import { DataSource } from 'typeorm';
 
 // Importamos herramientas auxiliares.
 import { resetTestDatabase } from '../../utils/reset-db.util';
-import { getDataSourceToken } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
 
 // Inicializamos el test e2e de la query "getMyProfile" en GraphQL.
 describe('GraphQL: QUERY getMyProfile (e2e)', () => {

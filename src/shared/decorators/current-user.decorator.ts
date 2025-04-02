@@ -1,7 +1,7 @@
 // Importamos las dependencias.
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import { AuthPayload } from '../../modules/auth/interfaces/auth-payload.interface';
+import { AuthPayload } from '@/modules/auth/interfaces/auth-payload.interface';
 
 // Inicializamos el decorador personalizado.
 export const CurrentUser = createParamDecorator(

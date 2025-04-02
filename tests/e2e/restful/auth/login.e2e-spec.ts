@@ -1,6 +1,8 @@
 // Importamos las dependencias principales.
 import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
+
+// Importamos herramientas auxiliares.
 import { createTestApp } from '../../../test-utils';
 
 // Definimos la app y el servidor HTTP.
